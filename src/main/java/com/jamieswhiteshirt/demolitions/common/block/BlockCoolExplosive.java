@@ -1,6 +1,7 @@
 package com.jamieswhiteshirt.demolitions.common.block;
 
 import com.jamieswhiteshirt.demolitions.Demolitions;
+import com.jamieswhiteshirt.demolitions.api.IExplosionScheduler;
 import com.jamieswhiteshirt.demolitions.api.IShakeManager;
 import com.jamieswhiteshirt.demolitions.api.ShakeSource;
 import net.minecraft.block.Block;
@@ -21,11 +22,9 @@ public class BlockCoolExplosive extends Block {
 
     private void explosionThingy(World world, BlockPos pos) {
         if (!world.isRemote) {
-            //world.createExplosion(null, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, 5.0F, false);
-        } else {
-            IShakeManager manager = world.getCapability(Demolitions.SHAKE_MANAGER_CAPABILITY, null);
-            if (manager != null) {
-                manager.add(new ShakeSource(new Vec3d(pos).addVector(0.5, 0.5, 0.5), 256.0D));
+            IExplosionScheduler explosionScheduler = world.getCapability(Demolitions.EXPLOSION_SCHEDULER_CAPABILITY, null);
+            if (explosionScheduler != null) {
+                explosionScheduler.scheduleExplosion(pos, 5.0F);
             }
         }
     }
@@ -40,14 +39,7 @@ public class BlockCoolExplosive extends Block {
     @Override
     public void neighborChanged(IBlockState state, World world, BlockPos pos, Block block, BlockPos fromPos) {
         if (world.isBlockPowered(pos)) {
-            world.addBlockEvent(pos, this, 0, 0);
+            explosionThingy(world, pos);
         }
-    }
-
-    @SuppressWarnings("deprecation")
-    @Override
-    public boolean eventReceived(IBlockState state, World world, BlockPos pos, int id, int param) {
-        explosionThingy(world, pos);
-        return true;
     }
 }

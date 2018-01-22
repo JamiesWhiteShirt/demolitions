@@ -3,8 +3,10 @@ package com.jamieswhiteshirt.demolitions.client;
 import com.jamieswhiteshirt.demolitions.Demolitions;
 import com.jamieswhiteshirt.demolitions.api.IShakeManager;
 import com.jamieswhiteshirt.demolitions.api.ShakeSource;
+import com.jamieswhiteshirt.demolitions.client.network.messagehandler.ExplosionsMessageHandler;
 import com.jamieswhiteshirt.demolitions.common.CommonProxy;
 import com.jamieswhiteshirt.demolitions.common.capability.ShakeManagerProvider;
+import com.jamieswhiteshirt.demolitions.common.network.message.ExplosionsMessage;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.multiplayer.WorldClient;
@@ -21,6 +23,7 @@ import net.minecraftforge.client.event.EntityViewRenderEvent;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
+import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -28,6 +31,13 @@ import java.util.Random;
 
 @SideOnly(Side.CLIENT)
 public final class ClientProxy extends CommonProxy {
+    @Override
+    public SimpleNetworkWrapper createNetworkChannel() {
+        SimpleNetworkWrapper networkChannel = super.createNetworkChannel();
+        networkChannel.registerMessage(new ExplosionsMessageHandler(), ExplosionsMessage.class, 0, Side.CLIENT);
+        return networkChannel;
+    }
+
     @SubscribeEvent
     public void onCameraSetup(EntityViewRenderEvent.CameraSetup event) {
         WorldClient world = Minecraft.getMinecraft().world;
@@ -41,7 +51,7 @@ public final class ClientProxy extends CommonProxy {
                 entity.prevPosZ + (entity.posZ - entity.prevPosZ) * partialTicks
             );
 
-            double accShake = manager.getAll().stream().mapToDouble(shakeSource -> shakeSource.getIntensity() / shakeSource.getPos().distanceTo(pos)).sum() * 0.01;
+            double accShake = manager.getAll().stream().mapToDouble(shakeSource -> shakeSource.getIntensity() / shakeSource.getPos().distanceTo(pos)).sum();
 
             if (accShake > 0.01D) {
                 long seed = Double.doubleToLongBits(event.getRenderPartialTicks());
@@ -79,7 +89,7 @@ public final class ClientProxy extends CommonProxy {
                     AxisAlignedBB bb = player.getEntityBoundingBox().grow(10.0, 10.0, 10.0);
                     ParticleManager particleManager = Minecraft.getMinecraft().effectRenderer;
                     for (ShakeSource source : manager.getAll()) {
-                        double intensity = source.getIntensity();
+                        double intensity = source.getIntensity() * 100.0D;
                         int numParticles = (int) Math.floor(intensity * intensity * 0.125);
                         for (int i = 0; i < numParticles; i++) {
                             Vec3d tryVec = source.getPos().add(new Vec3d(
