@@ -1,0 +1,15 @@
+[
+{
+  "modid": "demolitions",
+  "name": "Demolitions",
+  "description": "It's a mod",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "url": "",
+  "updateUrl": "",
+  "authorList": ["JamiesWhiteShirt"],
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": []
+}
+]

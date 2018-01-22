@@ -1,0 +1,98 @@
+buildscript {
+    repositories {
+        jcenter()
+        maven { url = "http://files.minecraftforge.net/maven" }
+    }
+    dependencies {
+        classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
+    }
+}
+apply plugin: 'net.minecraftforge.gradle.forge'
+
+
+version = modVersion
+group = "com.jamieswhiteshirt.demolitions"
+archivesBaseName = "demolitions"
+
+sourceCompatibility = targetCompatibility = '1.8' // Need this here so eclipse task generates correctly.
+compileJava {
+    sourceCompatibility = targetCompatibility = '1.8'
+}
+
+minecraft {
+    version = mcfVersion
+    mappings = mcpMappings
+    runDir = "run"
+    clientJvmArgs = serverJvmArgs = ["-Dfml.coreMods.load=$fmlCorePlugin"]
+}
+
+dependencies {
+}
+
+processResources {
+    // this will ensure that this task is redone when the versions change.
+    inputs.property "version", project.version
+    inputs.property "mcversion", project.minecraft.version
+
+    // replace stuff in mcmod.info, nothing else
+    from(sourceSets.main.resources.srcDirs) {
+        include 'mcmod.info'
+                
+        // replace version and mcversion
+        expand 'version':project.version, 'mcversion':project.minecraft.version
+    }
+        
+    // copy everything else except the mcmod.info
+    from(sourceSets.main.resources.srcDirs) {
+        exclude 'mcmod.info'
+    }
+}
+
+sourceSets {
+    core {
+        compileClasspath = main.compileClasspath
+        runtimeClasspath = main.runtimeClasspath
+    }
+    main {
+        compileClasspath += core.output
+        runtimeClasspath += core.output
+    }
+}
+
+task coreJar(type: Jar) {
+    from sourceSets.core.output
+
+    manifest {
+        attributes "FMLCorePlugin": fmlCorePlugin, "Maven-Version": "${project.group}:${project.archivesBaseName}:${project.version}:core"
+    }
+
+    classifier = "core"
+}
+
+reobf {
+    coreJar {
+        mappingType = 'SEARGE'
+    }
+}
+
+jar {
+    from sourceSets.api.output
+    from sourceSets.main.output
+
+    from(coreJar.archivePath.absolutePath) {
+        include '*'
+    }
+
+    manifest {
+        attributes 'ContainedDeps': coreJar.archivePath.name
+    }
+
+    dependsOn reobfCoreJar
+}
+
+task sourcesJar(type: Jar) {
+    from sourceSets.api.allSource
+    from sourceSets.main.allSource
+    from sourceSets.core.allSource
+    classifier = 'sources'
+}
