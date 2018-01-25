@@ -58,9 +58,9 @@ public final class ClientProxy extends CommonProxy {
                 seed ^= Minecraft.getMinecraft().world.getTotalWorldTime();
                 Random random = new Random(seed);
                 GlStateManager.translate(
-                    (random.nextDouble() - random.nextDouble()) * accShake,
-                    (random.nextDouble() - random.nextDouble()) * accShake,
-                    (random.nextDouble() - random.nextDouble()) * accShake
+                    (random.nextDouble() - random.nextDouble()) * accShake * 0.001D,
+                    (random.nextDouble() - random.nextDouble()) * accShake * 0.001D,
+                    (random.nextDouble() - random.nextDouble()) * accShake * 0.001D
                 );
             }
         }
@@ -86,24 +86,22 @@ public final class ClientProxy extends CommonProxy {
                 if (manager != null) {
                     manager.tick();
 
-                    AxisAlignedBB bb = player.getEntityBoundingBox().grow(10.0, 10.0, 10.0);
                     ParticleManager particleManager = Minecraft.getMinecraft().effectRenderer;
-                    for (ShakeSource source : manager.getAll()) {
-                        double intensity = source.getIntensity() * 100.0D;
-                        int numParticles = (int) Math.floor(intensity * intensity * 0.125);
-                        for (int i = 0; i < numParticles; i++) {
-                            Vec3d tryVec = source.getPos().add(new Vec3d(
-                                particleRandom.nextDouble() - particleRandom.nextDouble(),
-                                particleRandom.nextDouble() - particleRandom.nextDouble(),
-                                particleRandom.nextDouble() - particleRandom.nextDouble()
-                            ).scale(Math.sqrt(intensity)));
-                            if (bb.contains(tryVec)) {
-                                BlockPos pos = new BlockPos(tryVec);
-                                EnumFacing facing = EnumFacing.values()[particleRandom.nextInt(EnumFacing.values().length)];
-                                if (!world.isBlockFullCube(pos.offset(facing))) {
-                                    particleManager.addBlockHitEffects(pos, facing);
-                                }
-                            }
+
+                    Vec3d vec = new Vec3d(player.posX, player.posY + player.eyeHeight, player.posZ);
+                    double accShake = manager.getAll().stream().mapToDouble(shakeSource -> shakeSource.getIntensity() / shakeSource.getPos().distanceTo(vec)).sum();
+
+                    int numParticles = (int) Math.floor(accShake * 10.0F);
+                    for (int i = 0; i < numParticles; i++) {
+                        Vec3d tryVec = vec.add(new Vec3d(
+                            particleRandom.nextDouble(),
+                            particleRandom.nextDouble(),
+                            particleRandom.nextDouble()
+                        ).scale(20.0D)).subtract(10.0, 10.0, 10);
+                        BlockPos pos = new BlockPos(tryVec);
+                        EnumFacing facing = EnumFacing.values()[particleRandom.nextInt(EnumFacing.values().length)];
+                        if (!world.isBlockFullCube(pos.offset(facing))) {
+                            particleManager.addBlockHitEffects(pos, facing);
                         }
                     }
                 }

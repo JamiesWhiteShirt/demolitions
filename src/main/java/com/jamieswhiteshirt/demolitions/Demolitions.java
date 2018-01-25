@@ -75,7 +75,7 @@ public class Demolitions {
     @SubscribeEvent
     public void registerBlocks(RegistryEvent.Register<Block> event) {
         event.getRegistry().registerAll(
-            withBoth(new BlockCoolExplosive(Material.TNT), "cool_explosive").setBlockUnbreakable().setResistance(6000000.0F)
+            withBoth(new BlockCoolExplosive(Material.ROCK), "cool_explosive").setBlockUnbreakable().setResistance(6000000.0F)
         );
     }
 

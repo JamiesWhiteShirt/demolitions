@@ -15,16 +15,38 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.Queue;
+import java.util.Set;
+
 public class BlockCoolExplosive extends Block {
     public BlockCoolExplosive(Material materialIn) {
         super(materialIn);
     }
 
-    private void explosionThingy(World world, BlockPos pos) {
+    private void explosionThingy(World world, BlockPos fromPos) {
         if (!world.isRemote) {
             IExplosionScheduler explosionScheduler = world.getCapability(Demolitions.EXPLOSION_SCHEDULER_CAPABILITY, null);
             if (explosionScheduler != null) {
-                explosionScheduler.scheduleExplosion(pos, 5.0F);
+                Set<BlockPos> visited = new HashSet<>();
+                Queue<BlockPos> frontier = new LinkedList<>();
+                visited.add(fromPos);
+                frontier.add(fromPos);
+
+                while (!frontier.isEmpty()) {
+                    BlockPos pos = frontier.remove();
+                    if (world.getBlockState(pos).getBlock() == this) {
+                        explosionScheduler.scheduleExplosion(pos, 250.0F);
+                        for (EnumFacing facing : EnumFacing.values()) {
+                            BlockPos candidatePos = pos.offset(facing);
+                            if (visited.add(candidatePos)) {
+                                visited.add(candidatePos);
+                                frontier.add(candidatePos);
+                            }
+                        }
+                    }
+                }
             }
         }
     }
