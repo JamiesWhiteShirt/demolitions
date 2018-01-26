@@ -10,6 +10,7 @@ import com.jamieswhiteshirt.demolitions.common.CommonProxy;
 import com.jamieswhiteshirt.demolitions.common.DemolitionsBlocks;
 import com.jamieswhiteshirt.demolitions.common.block.BlockCoolExplosive;
 import com.jamieswhiteshirt.demolitions.common.capability.ExplosionSchedulerProvider;
+import com.jamieswhiteshirt.demolitions.common.tileentity.TileEntityBlastingMachine;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.item.Item;
@@ -30,6 +31,7 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
+import net.minecraftforge.fml.common.registry.GameRegistry;
 
 @Mod(
     modid = Demolitions.MODID,
@@ -79,6 +81,8 @@ public class Demolitions {
             withBoth(new BlockCoolExplosive(Material.ROCK), "cool_explosive").setBlockUnbreakable().setResistance(6000000.0F),
             withBoth(new BlockBlastingMachine(Material.WOOD), "blasting_machine")
         );
+
+        GameRegistry.registerTileEntity(TileEntityBlastingMachine.class, new ResourceLocation(MODID, "blasting_machine").toString());
     }
 
     @SubscribeEvent
