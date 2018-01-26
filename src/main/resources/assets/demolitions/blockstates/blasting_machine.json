@@ -1,0 +1,12 @@
+{
+  "variants": {
+    "depressed=false,facing=north": { "model": "demolitions:blasting_machine_raised" },
+    "depressed=false,facing=south": { "model": "demolitions:blasting_machine_raised", "y": 180 },
+    "depressed=false,facing=west":  { "model": "demolitions:blasting_machine_raised", "y": 270 },
+    "depressed=false,facing=east":  { "model": "demolitions:blasting_machine_raised", "y": 90 },
+    "depressed=true,facing=north":  { "model": "demolitions:blasting_machine_depressed" },
+    "depressed=true,facing=south":  { "model": "demolitions:blasting_machine_depressed", "y": 180 },
+    "depressed=true,facing=west":   { "model": "demolitions:blasting_machine_depressed", "y": 270 },
+    "depressed=true,facing=east":   { "model": "demolitions:blasting_machine_depressed", "y": 90 }
+  }
+}

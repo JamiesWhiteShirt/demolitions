@@ -3,6 +3,7 @@ package com.jamieswhiteshirt.demolitions;
 import com.jamieswhiteshirt.demolitions.api.IExplosionScheduler;
 import com.jamieswhiteshirt.demolitions.api.IShakeManager;
 import com.jamieswhiteshirt.demolitions.common.Util;
+import com.jamieswhiteshirt.demolitions.common.block.BlockBlastingMachine;
 import com.jamieswhiteshirt.demolitions.common.capability.DummyFactory;
 import com.jamieswhiteshirt.demolitions.common.capability.DummyStorage;
 import com.jamieswhiteshirt.demolitions.common.CommonProxy;
@@ -75,14 +76,16 @@ public class Demolitions {
     @SubscribeEvent
     public void registerBlocks(RegistryEvent.Register<Block> event) {
         event.getRegistry().registerAll(
-            withBoth(new BlockCoolExplosive(Material.ROCK), "cool_explosive").setBlockUnbreakable().setResistance(6000000.0F)
+            withBoth(new BlockCoolExplosive(Material.ROCK), "cool_explosive").setBlockUnbreakable().setResistance(6000000.0F),
+            withBoth(new BlockBlastingMachine(Material.WOOD), "blasting_machine")
         );
     }
 
     @SubscribeEvent
     public void registerItems(RegistryEvent.Register<Item> event) {
         event.getRegistry().registerAll(
-            new ItemBlock(DemolitionsBlocks.COOL_EXPLOSIVE).setRegistryName(MODID, "cool_explosive")
+            new ItemBlock(DemolitionsBlocks.COOL_EXPLOSIVE).setRegistryName(MODID, "cool_explosive"),
+            new ItemBlock(DemolitionsBlocks.BLASTING_MACHINE).setRegistryName(MODID, "blasting_machine")
         );
     }
 

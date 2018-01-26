@@ -1,0 +1,92 @@
+{ "parent": "minecraft:block/block",
+  "textures": {
+    "particle": "demolitions:blocks/blasting_machine_body",
+    "body": "demolitions:blocks/blasting_machine_body",
+    "strap": "demolitions:blocks/blasting_machine_strap",
+    "rod": "demolitions:blocks/blasting_machine_rod",
+    "electrode": "minecraft:blocks/iron_block"
+  },
+  "display": {
+    "fixed": {
+      "rotation": [ 0, 90, 0 ],
+      "translation": [ 0, 0, 0 ],
+      "scale": [ 0.5, 0.5, 0.5 ]
+    }
+  },
+  "elements": [
+    {
+      "from": [ 4, 0, 4 ],
+      "to": [ 12, 8, 12 ],
+      "faces": {
+        "down":  { "texture": "#body", "cullface": "down" },
+        "up":    { "texture": "#body" },
+        "north": { "texture": "#body" },
+        "south": { "texture": "#body" },
+        "west":  { "texture": "#body" },
+        "east":  { "texture": "#body" }
+      }
+    },
+    {
+      "from": [ 4, 8, 7 ],
+      "to": [ 12, 10, 9 ],
+      "faces": {
+        "up":   { "texture": "#strap" },
+        "west": { "texture": "#strap" },
+        "east": { "texture": "#strap" }
+      }
+    },
+    {
+      "from": [ 12, 10, 9 ],
+      "to": [ 4, 8, 7 ],
+      "faces": {
+        "down": { "texture": "#strap" },
+        "west": { "texture": "#strap" },
+        "east": { "texture": "#strap" }
+      }
+    },
+    {
+      "from": [ 5, 8, 5 ],
+      "to": [ 6, 9, 6 ],
+      "faces": {
+        "up":    { "texture": "#electrode" },
+        "north": { "texture": "#electrode" },
+        "south": { "texture": "#electrode" },
+        "west":  { "texture": "#electrode" },
+        "east":  { "texture": "#electrode" }
+      }
+    },
+    {
+      "from": [ 10, 8, 5 ],
+      "to": [ 11, 9, 6 ],
+      "faces": {
+        "up":    { "texture": "#electrode" },
+        "north": { "texture": "#electrode" },
+        "south": { "texture": "#electrode" },
+        "west":  { "texture": "#electrode" },
+        "east":  { "texture": "#electrode" }
+      }
+    },
+    {
+      "from": [ 7.5, 8, 9.5 ],
+      "to": [ 8.5, 9, 10.5 ],
+      "faces": {
+        "north": { "uv": [6, 7,  7, 8], "texture": "#rod" },
+        "west":  { "uv": [7, 7,  8, 8], "texture": "#rod" },
+        "south": { "uv": [8, 7,  9, 8], "texture": "#rod" },
+        "east":  { "uv": [9, 7, 10, 8], "texture": "#rod" }
+      }
+    },
+    {
+      "from": [ 4, 9, 9 ],
+      "to": [ 12, 11, 11 ],
+      "faces": {
+        "down":  { "texture": "#body" },
+        "up":    { "texture": "#body", "cullface": "up" },
+        "north": { "texture": "#body" },
+        "south": { "texture": "#body" },
+        "west":  { "texture": "#body" },
+        "east":  { "texture": "#body" }
+      }
+    }
+  ]
+}

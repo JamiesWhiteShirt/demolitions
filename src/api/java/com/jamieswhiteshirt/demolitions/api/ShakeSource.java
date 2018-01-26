@@ -20,7 +20,7 @@ public class ShakeSource {
     }
 
     public boolean tick() {
-        intensity *= 0.90;
+        intensity *= 0.85D;
         return intensity < 0.01D;
     }
 }

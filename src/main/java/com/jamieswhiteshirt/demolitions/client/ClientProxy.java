@@ -5,6 +5,7 @@ import com.jamieswhiteshirt.demolitions.api.IShakeManager;
 import com.jamieswhiteshirt.demolitions.api.ShakeSource;
 import com.jamieswhiteshirt.demolitions.client.network.messagehandler.ExplosionsMessageHandler;
 import com.jamieswhiteshirt.demolitions.common.CommonProxy;
+import com.jamieswhiteshirt.demolitions.common.DemolitionsItems;
 import com.jamieswhiteshirt.demolitions.common.capability.ShakeManagerProvider;
 import com.jamieswhiteshirt.demolitions.common.network.message.ExplosionsMessage;
 import net.minecraft.client.Minecraft;
@@ -12,6 +13,7 @@ import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.particle.ParticleManager;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
@@ -20,6 +22,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraftforge.client.event.EntityViewRenderEvent;
+import net.minecraftforge.client.event.ModelRegistryEvent;
+import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
@@ -39,6 +43,11 @@ public final class ClientProxy extends CommonProxy {
     }
 
     @SubscribeEvent
+    public void registerModels(ModelRegistryEvent event) {
+        ModelLoader.setCustomModelResourceLocation(DemolitionsItems.BLASTING_MACHINE, 0, new ModelResourceLocation(new ResourceLocation("demolitions", "blasting_machine"), "inventory"));
+    }
+
+    @SubscribeEvent
     public void onCameraSetup(EntityViewRenderEvent.CameraSetup event) {
         WorldClient world = Minecraft.getMinecraft().world;
         IShakeManager manager = world.getCapability(Demolitions.SHAKE_MANAGER_CAPABILITY, null);
@@ -51,16 +60,17 @@ public final class ClientProxy extends CommonProxy {
                 entity.prevPosZ + (entity.posZ - entity.prevPosZ) * partialTicks
             );
 
-            double accShake = manager.getAll().stream().mapToDouble(shakeSource -> shakeSource.getIntensity() / shakeSource.getPos().distanceTo(pos)).sum();
+            double intensity = manager.getAll().stream().mapToDouble(shakeSource -> shakeSource.getIntensity() / shakeSource.getPos().squareDistanceTo(pos)).sum();
 
-            if (accShake > 0.01D) {
+            if (intensity > 0.01D) {
                 long seed = Double.doubleToLongBits(event.getRenderPartialTicks());
                 seed ^= Minecraft.getMinecraft().world.getTotalWorldTime();
                 Random random = new Random(seed);
+                double multiplier = Math.sqrt(intensity) * 0.1D;
                 GlStateManager.translate(
-                    (random.nextDouble() - random.nextDouble()) * accShake * 0.001D,
-                    (random.nextDouble() - random.nextDouble()) * accShake * 0.001D,
-                    (random.nextDouble() - random.nextDouble()) * accShake * 0.001D
+                    (random.nextDouble() - random.nextDouble()) * multiplier,
+                    (random.nextDouble() - random.nextDouble()) * multiplier,
+                    (random.nextDouble() - random.nextDouble()) * multiplier
                 );
             }
         }
@@ -89,9 +99,9 @@ public final class ClientProxy extends CommonProxy {
                     ParticleManager particleManager = Minecraft.getMinecraft().effectRenderer;
 
                     Vec3d vec = new Vec3d(player.posX, player.posY + player.eyeHeight, player.posZ);
-                    double accShake = manager.getAll().stream().mapToDouble(shakeSource -> shakeSource.getIntensity() / shakeSource.getPos().distanceTo(vec)).sum();
+                    double intensity = manager.getAll().stream().mapToDouble(shakeSource -> shakeSource.getIntensity() / shakeSource.getPos().squareDistanceTo(vec)).sum();
 
-                    int numParticles = (int) Math.floor(accShake * 10.0F);
+                    int numParticles = (int) Math.floor(intensity * 100.0F);
                     for (int i = 0; i < numParticles; i++) {
                         Vec3d tryVec = vec.add(new Vec3d(
                             particleRandom.nextDouble(),
